@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>LCR Framework - Utilities</Title>
+    <Version>0.0.0</Version>
+    <Authors>Luan Caetano Rechi</Authors>
+    <Company>LCR-Solutions</Company>
+    <Product>LCR Framework</Product>
+  </PropertyGroup>
+
+</Project>
