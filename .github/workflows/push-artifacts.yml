@@ -1,0 +1,55 @@
+name: Push package to Azure Artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ secrets.DOTNET_VERSION }}
+
+      # Run dotnet build and package
+      - name: dotnet build and test
+        run: |
+          dotnet restore
+          dotnet build --configuration "${{ secrets.BUILD_CONFIGURATION }}"
+          dotnet test --configuration "${{ secrets.BUILD_CONFIGURATION }}"
+
+  az-artifacts-build-and-deploy:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ secrets.DOTNET_VERSION }}
+          source-url: ${{ secrets.AZURE_ARTIFACTS_FEED_URL }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }} 
+
+      # Run dotnet build and package
+      - name: dotnet build and publish
+        run: |
+          dotnet restore
+          dotnet build --configuration "${{ secrets.BUILD_CONFIGURATION }}"
+          dotnet pack -c "${{ secrets.BUILD_CONFIGURATION }}" --version-suffix ${{ github.run_id }}
+
+      # Publish the package to Azure Artifacts
+      - name: 'dotnet publish'
+        run: dotnet nuget push bin/Release/*.nupkg --api-key AzureArtifacts
