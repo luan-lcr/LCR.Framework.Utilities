@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository
@@ -28,7 +27,6 @@ jobs:
 
   az-artifacts-build-and-deploy:
     needs: build
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository
